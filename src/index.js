@@ -17,14 +17,18 @@ refs.input.addEventListener(
       if (response.status === 404) {
         return Notify.failure('Oops, there is no country with that name');
       } else if (response.length > 10) {
-        ResetMarkup();
+        ResetMarkup('all');
         Notify.info(
           'Too many matches found. Please enter a more specific name.'
         );
       } else {
         if (response.length === 1) {
+          ResetMarkup('list');
           return RenederMarkup(createInfoMarkup(response), 'info');
-        } else return RenederMarkup(createListMarkup(response), 'list');
+        } else {
+          ResetMarkup('info');
+          RenederMarkup(createListMarkup(response), 'list');
+        }
       }
     });
   }, DEBOUNCE_DELAY)
@@ -56,7 +60,13 @@ const RenederMarkup = (data, place) => {
   document.querySelector(`.country-${place}`).innerHTML = data;
 };
 
-const ResetMarkup = () => {
-  document.querySelector(`.country-info`).innerHTML = '';
-  document.querySelector(`.country-list`).innerHTML = '';
+const ResetMarkup = query => {
+  if (query === 'list') {
+    document.querySelector(`.country-list`).innerHTML = '';
+  } else if (query === 'info') {
+    document.querySelector(`.country-info`).innerHTML = '';
+  } else if (query === 'all') {
+    document.querySelector(`.country-list`).innerHTML = '';
+    document.querySelector(`.country-info`).innerHTML = '';
+  }
 };
